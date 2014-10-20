@@ -1,0 +1,42 @@
+#lang racket
+
+(require rackunit)
+(require rackunit/text-ui)
+(require "cowabunga.rkt")
+
+(define proxima-vaca-test
+  (test-suite
+   (check-equal? (proxima-vaca (make-vaca 20 3)) (make-vaca (+ 20 3) 3))
+   (check-equal? (proxima-vaca (make-vaca 20 -3)) (make-vaca (- 20 3) -3))
+   
+   (check-equal? (proxima-vaca (make-vaca (- COMPRIMENTO-CENA 3) 3)) 
+                 (make-vaca COMPRIMENTO-CENA 3))     ;pára no limite
+   
+   (check-equal? (proxima-vaca (make-vaca (- COMPRIMENTO-CENA 2) 3)) 
+                 (make-vaca COMPRIMENTO-CENA -3)) ;passa do limite -> volta
+   
+   
+   (check-equal? (proxima-vaca (make-vaca 3 -3)) 
+                 (make-vaca 0 -3))     ;pára no limite
+   
+   (check-equal? (proxima-vaca (make-vaca 2 -3)) 
+                 (make-vaca 0 3)) ;passa do limite -> volta
+   
+  ))
+
+(define render-vaca-test
+  (test-suite
+   (check-equal? (render-vaca (make-vaca 20 3)) (place-image VACA-INO+ 20 CTR-Y CENA)) 
+   (check-equal? (render-vaca (make-vaca 100 -3)) (place-image VACA-VORTANO+ 100 CTR-Y CENA)))) 
+
+(define escolher-imagem-test
+  (test-suite
+   (check-equal?  (escolher-imagem (make-vaca 20 3)) VACA-INO+)
+   (check-equal?  (escolher-imagem (make-vaca 20 -3)) VACA-VORTANO+)
+   (check-equal?  (escolher-imagem (make-vaca 23 3)) VACA-INO-)
+   (check-equal?  (escolher-imagem (make-vaca 23 -3)) VACA-VORTANO-)))
+
+(define handle-key-test
+  (test-suite
+   (check-equal? (handle-key (make-vaca 20 3) " ") (make-vaca 20 -3))
+   (check-equal? (handle-key (make-vaca 20 3) "a") (make-vaca 20 3))))
